@@ -1,0 +1,21 @@
+node_modules/
+.vscode/
+.DS_Store
+dist/
+/build/
+.env
+.env.local
+.env.*
+# MacOS
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+# IDE
+.idea/
+*.sublime-workspace
+*.sublime-project
+# Optional npm cache files
+.npm
+# Vite cache
+.vite
