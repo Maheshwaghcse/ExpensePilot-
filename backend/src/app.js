@@ -22,17 +22,22 @@ app.use(helmet({
   crossOriginResourcePolicy: false // Allows loading local receipt images in the frontend
 }));
 
-// CORS Configuration (Dynamically allow localhost origins and configured URL)
+// CORS Configuration (Dynamically allow localhost, Vercel deployments, and configured URL)
 const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'];
-if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL);
+if (process.env.FRONTEND_URL) allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/$/, ''));
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.startsWith('http://localhost:')) {
+    const cleanOrigin = origin.replace(/\/$/, '');
+    if (
+      allowedOrigins.indexOf(cleanOrigin) !== -1 ||
+      cleanOrigin.startsWith('http://localhost:') ||
+      cleanOrigin.endsWith('.vercel.app')
+    ) {
       return callback(null, true);
     }
-    return callback(new Error('CORS policy violation'), false);
+    return callback(new Error(`CORS policy violation for origin: ${origin}`), false);
   },
   credentials: true
 }));
