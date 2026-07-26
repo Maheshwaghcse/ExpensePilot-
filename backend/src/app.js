@@ -72,6 +72,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Favicon 204 Handler (Prevents 404 browser console logs)
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Static files route for uploaded receipt PDFs and images
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
