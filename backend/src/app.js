@@ -73,7 +73,21 @@ app.use((req, res, next) => {
 });
 
 // Favicon 204 Handler (Prevents 404 browser console logs)
-app.get('/favicon.ico', (req, res) => res.status(204).end());
+app.get(['/favicon.ico', '/favicon.svg', '/apple-touch-icon.png', '/apple-touch-icon-precomposed.png'], (req, res) => res.status(204).end());
+
+// Root API Welcome & Health Check Routes (Fixes 404 when visiting Render URL directly)
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'online',
+    message: 'ExpensePilot Express Backend Service is live & healthy.',
+    version: '1.0.0',
+    endpoints: '/api/v1'
+  });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
 
 // Static files route for uploaded receipt PDFs and images
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
@@ -88,6 +102,11 @@ app.use('/api/v1/receipts', receiptRoutes);
 app.use('/api/v1/fraud', fraudRoutes);
 app.use('/api/v1/dashboards', dashboardRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+
+// 404 Route Handler for undefined endpoints
+app.use((req, res) => {
+  res.status(404).json({ error: `Cannot ${req.method} ${req.originalUrl} - Resource not found` });
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
