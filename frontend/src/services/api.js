@@ -5,8 +5,10 @@ const getCookieValue = (name) => {
 
 import axios from 'axios';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL: API_BASE_URL,
   withCredentials: true, // required for secure HttpOnly cookie storage
 });
 
@@ -34,7 +36,7 @@ api.interceptors.response.use(
       try {
         // Attempt to refresh the access token
         const res = await axios.post(
-          'http://localhost:5000/api/v1/auth/refresh-token',
+          `${API_BASE_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );

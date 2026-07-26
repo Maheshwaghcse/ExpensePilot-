@@ -1,0 +1,55 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1361 >>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 40 720 Tm (=====================================================) Tj
+1 0 0 1 40 706 Tm (               OFFICIAL EXPENSE RECEIPT              ) Tj
+1 0 0 1 40 692 Tm (=====================================================) Tj
+1 0 0 1 40 678 Tm (Merchant Name:   Starbucks Coffee #4912) Tj
+1 0 0 1 40 664 Tm (Date of Service: 2026-07-20) Tj
+1 0 0 1 40 650 Tm (Receipt Ref ID:  REC-970493) Tj
+1 0 0 1 40 636 Tm (Category:        Food & Beverage) Tj
+1 0 0 1 40 622 Tm (Payment Method:  Corporate Card \(VISA ****9812\)) Tj
+1 0 0 1 40 608 Tm (-----------------------------------------------------) Tj
+1 0 0 1 40 594 Tm (PURCHASED ITEMS:) Tj
+1 0 0 1 40 580 Tm (  * Caffe Latte Venti                $   5.75) Tj
+1 0 0 1 40 566 Tm (  * Caramel Macchiato                $   6.25) Tj
+1 0 0 1 40 552 Tm (  * Butter Croissant                 $   4.50) Tj
+1 0 0 1 40 538 Tm (  * Tip                              $   2.00) Tj
+1 0 0 1 40 524 Tm (-----------------------------------------------------) Tj
+1 0 0 1 40 510 Tm (SUBTOTAL:        $  16.65 USD) Tj
+1 0 0 1 40 496 Tm (TAX \(10%\):       $   1.85 USD) Tj
+1 0 0 1 40 482 Tm (TOTAL AMOUNT:    $  18.50 USD) Tj
+1 0 0 1 40 468 Tm (=====================================================) Tj
+1 0 0 1 40 454 Tm (STATUS:          COMPLETED / VERIFIED) Tj
+1 0 0 1 40 440 Tm (Thank you for your business!) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001654 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1722
+%%EOF
