@@ -24,7 +24,7 @@ const Register = () => {
     setErrorMsg('');
     try {
       await registerCompany(data.name, data.email, data.password, data.companyName);
-      setSuccessMsg('Registration successful! Since we are in development, check the server terminal console for the verification email link and copy the token value.');
+      setSuccessMsg('Registration successful! A verification email has been dispatched to your email inbox. Click the verification link in your email or paste the token string below.');
       setVerificationMode(true);
     } catch (err) {
       setErrorMsg(err);

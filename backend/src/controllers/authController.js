@@ -48,9 +48,18 @@ const register = async (req, res) => {
       to: user.email,
       subject: 'Verify your ExpensePilot Account',
       html: `
-        <h3>Welcome to ExpensePilot, ${user.name}!</h3>
-        <p>Please verify your email and activate your account by clicking the link below:</p>
-        <a href="${verificationUrl}" target="_blank">Verify Email</a>
+        <div style="font-family: Arial, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 32px; borderRadius: 16px; max-width: 550px; margin: 0 auto;">
+          <h2 style="color: #6366f1; font-size: 24px; margin-bottom: 12px;">Welcome to ExpensePilot!</h2>
+          <p style="font-size: 14px; color: #94a3b8; line-height: 1.6;">Hello <strong>${user.name}</strong>,</p>
+          <p style="font-size: 14px; color: #94a3b8; line-height: 1.6;">Thank you for registering your company <strong>${companyName}</strong>. Please click the button below to verify your email address and activate your administrator account:</p>
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${verificationUrl}" target="_blank" style="background-color: #4f46e5; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 14px; display: inline-block;">Verify Email Address</a>
+          </div>
+          <p style="font-size: 12px; color: #64748b; line-height: 1.5;">Or copy and paste your verification token directly into the app:</p>
+          <div style="background-color: #020617; padding: 12px; border-radius: 8px; border: 1px solid #334155; font-family: monospace; font-size: 12px; color: #38bdf8; word-break: break-all; margin-top: 8px;">
+            ${verificationToken}
+          </div>
+        </div>
       `
     });
 

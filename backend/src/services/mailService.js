@@ -2,37 +2,56 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ to, subject, html }) => {
   try {
-    // If credentials are empty or default mock settings, just log and return
-    if (!process.env.EMAIL_HOST || process.env.EMAIL_USER === 'mock_user') {
+    const emailUser = process.env.EMAIL_USER;
+    const emailPass = process.env.EMAIL_PASS;
+    const emailService = process.env.EMAIL_SERVICE;
+    const emailHost = process.env.EMAIL_HOST;
+
+    // Check if credentials are mock/default
+    const isMockMode = !emailUser || emailUser === 'mock_user' || !emailPass || emailPass === 'mock_pass';
+
+    if (isMockMode) {
       console.log(`\n======================================================`);
-      console.log(`[MOCK EMAIL SENT]`);
+      console.log(`[DEV MOCK EMAIL LOGGED - Set EMAIL_USER & EMAIL_PASS in .env for real emails]`);
       console.log(`TO:      ${to}`);
       console.log(`SUBJECT: ${subject}`);
-      console.log(`BODY:    ${html.replace(/<[^>]*>/g, '')}`); // Strip HTML tags for clean console display
       console.log(`======================================================\n`);
       return true;
     }
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT) || 2525,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
-    });
+    // Configure Nodemailer transporter options
+    let transportOptions;
+    if (emailService) {
+      transportOptions = {
+        service: emailService,
+        auth: { user: emailUser, pass: emailPass }
+      };
+    } else {
+      const port = parseInt(process.env.EMAIL_PORT) || 587;
+      transportOptions = {
+        host: emailHost || 'smtp.gmail.com',
+        port,
+        secure: port === 465, // true for 465, false for 587/2525
+        auth: { user: emailUser, pass: emailPass },
+        tls: { rejectUnauthorized: false }
+      };
+    }
+
+    const transporter = nodemailer.createTransport(transportOptions);
+
+    const fromAddress = process.env.EMAIL_FROM || `"ExpensePilot" <${emailUser}>`;
 
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_FROM || 'noreply@expensepilot.com',
+      from: fromAddress,
       to,
       subject,
       html
     });
 
-    console.log(`Email dispatched: ${info.messageId}`);
+    console.log(`[Email] Verification email dispatched to ${to} (MessageId: ${info.messageId})`);
     return true;
   } catch (error) {
-    console.error(`Mail delivery error: ${error.message}`);
+    console.error(`[Email Error] Failed to send email to ${to}: ${error.message}`);
     return false;
   }
 };
