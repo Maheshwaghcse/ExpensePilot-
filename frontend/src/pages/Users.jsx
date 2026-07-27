@@ -416,6 +416,8 @@ const Users = () => {
             </form>
           </div>
         </div>
+      )}
+
       {/* Edit Employee Modal */}
       {editUserModalOpen && editingUser && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">

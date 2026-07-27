@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
+import PageGuideModal from '../UI/PageGuideModal';
 import { 
   LayoutDashboard, 
   Receipt, 
@@ -13,7 +14,8 @@ import {
   Check, 
   Menu, 
   X,
-  CreditCard
+  CreditCard,
+  HelpCircle
 } from 'lucide-react';
 
 const DashboardLayout = () => {
@@ -23,6 +25,7 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [guideModalOpen, setGuideModalOpen] = useState(false);
 
   // Fetch in-app notifications
   const fetchNotifications = async () => {
@@ -160,9 +163,19 @@ const DashboardLayout = () => {
             <Menu className="w-5 h-5" />
           </button>
           
-          <h2 className="text-lg font-bold text-white hidden sm:block">
-            {navItems.find(item => item.path === location.pathname)?.name || 'Account'}
-          </h2>
+          <div className="flex items-center gap-3 hidden sm:flex">
+            <h2 className="text-lg font-bold text-white">
+              {navItems.find(item => item.path === location.pathname)?.name || 'Account'}
+            </h2>
+            <button 
+              onClick={() => setGuideModalOpen(true)}
+              className="px-2.5 py-1 rounded-xl bg-indigo-600/15 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-600/25 hover:text-indigo-300 transition-all text-xs font-bold flex items-center gap-1.5 active:scale-95 shadow-sm"
+              title="Click to view Page Guide & Help"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>Page Guide</span>
+            </button>
+          </div>
 
           <div className="flex items-center gap-4 ml-auto">
             {/* Notification Bell Dropdown */}
@@ -241,6 +254,13 @@ const DashboardLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* Page Guide Interactive Modal */}
+      <PageGuideModal 
+        isOpen={guideModalOpen} 
+        onClose={() => setGuideModalOpen(false)} 
+        currentPath={location.pathname} 
+      />
     </div>
   );
 };

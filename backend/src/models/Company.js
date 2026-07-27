@@ -9,8 +9,7 @@ const companySchema = new mongoose.Schema({
   },
   domain: {
     type: String,
-    trim: true,
-    unique: true
+    trim: true
   },
   subscriptionStatus: {
     type: String,
@@ -21,4 +20,11 @@ const companySchema = new mongoose.Schema({
   timestamps: true
 });
 
-module.exports = mongoose.model('Company', companySchema);
+const Company = mongoose.model('Company', companySchema);
+
+// Safely drop legacy unique index on domain if it exists in MongoDB
+Company.collection.dropIndex('domain_1').catch(() => {
+  // Ignore error if index doesn't exist
+});
+
+module.exports = Company;

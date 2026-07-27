@@ -75,7 +75,8 @@ const getExpenseById = async (req, res) => {
     if (!expense) return res.status(404).json({ error: 'Expense not found' });
     
     // Role scope check
-    if (req.user.role === 'Employee' && expense.employeeId._id.toString() !== req.user.id) {
+    const empIdStr = expense.employeeId?._id?.toString() || expense.employeeId?.toString();
+    if (req.user.role === 'Employee' && empIdStr !== req.user.id) {
       return res.status(403).json({ error: 'Forbidden: Cannot access another employee\'s claim' });
     }
 

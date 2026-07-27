@@ -23,10 +23,18 @@ const register = async (req, res) => {
       return res.status(400).json({ error: 'Company name already registered' });
     }
 
+    // Construct company domain (Handle public email providers like gmail.com cleanly)
+    const emailDomain = (email.split('@')[1] || '').toLowerCase();
+    const publicDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'protonmail.com', 'live.com'];
+    const cleanCompName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const companyDomain = publicDomains.includes(emailDomain)
+      ? `${cleanCompName || 'company'}-${Date.now().toString(36)}.com`
+      : emailDomain;
+
     // Create Company (Tenant Root)
     company = await Company.create({
       name: companyName,
-      domain: email.split('@')[1]
+      domain: companyDomain
     });
 
     const verificationToken = crypto.randomBytes(32).toString('hex');
