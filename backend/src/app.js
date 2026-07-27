@@ -92,16 +92,24 @@ app.get('/health', (req, res) => {
 // Static files route for uploaded receipt PDFs and images
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
-// API Routes mounting
-app.use('/api/v1/auth', authRoutes);
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/departments', departmentRoutes);
-app.use('/api/v1/policies', policyRoutes);
-app.use('/api/v1/expenses', expenseRoutes);
-app.use('/api/v1/receipts', receiptRoutes);
-app.use('/api/v1/fraud', fraudRoutes);
-app.use('/api/v1/dashboards', dashboardRoutes);
-app.use('/api/v1/notifications', notificationRoutes);
+// API Routes mounting (Supports /api/v1/*, /api/*, and root /* for flexible deployment on Render/Vercel)
+const routes = [
+  { path: '/auth', router: authRoutes },
+  { path: '/users', router: userRoutes },
+  { path: '/departments', router: departmentRoutes },
+  { path: '/policies', router: policyRoutes },
+  { path: '/expenses', router: expenseRoutes },
+  { path: '/receipts', router: receiptRoutes },
+  { path: '/fraud', router: fraudRoutes },
+  { path: '/dashboards', router: dashboardRoutes },
+  { path: '/notifications', router: notificationRoutes }
+];
+
+routes.forEach(({ path, router }) => {
+  app.use(`/api/v1${path}`, router);
+  app.use(`/api${path}`, router);
+  app.use(`${path}`, router);
+});
 
 // 404 Route Handler for undefined endpoints
 app.use((req, res) => {

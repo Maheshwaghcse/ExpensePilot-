@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "ExpensePilot Multi-Tenant Corporate Expense Pipeline Monorepo root",
   "scripts": {
+    "start": "node backend/src/server.js",
+    "build": "npm install --prefix backend",
     "dev": "node run-dev.js",
     "install:all": "npm install --prefix backend && npm install --prefix frontend"
   }

@@ -3,6 +3,7 @@ services:
     name: expense-pilot-backend
     env: node
     region: oregon
+    rootDir: backend
     buildCommand: npm install
     startCommand: npm start
     envVars:

@@ -182,19 +182,19 @@ const Policies = () => {
                 <div className="border-t border-white/5 pt-4 space-y-2 text-xs font-semibold text-slate-300">
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Max Meal Cost:</span>
-                    <span>{policy.rules?.maxMealAmount > 0 ? `$${policy.rules.maxMealAmount}` : 'Unlimited'}</span>
+                    <span>{policy.rules?.maxMealAmount > 0 ? `₹${policy.rules.maxMealAmount}` : 'Unlimited'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Max Travel Cost:</span>
-                    <span>{policy.rules?.maxTravelAmount > 0 ? `$${policy.rules.maxTravelAmount}` : 'Unlimited'}</span>
+                    <span>{policy.rules?.maxTravelAmount > 0 ? `₹${policy.rules.maxTravelAmount}` : 'Unlimited'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Daily Limit:</span>
-                    <span>{policy.rules?.dailyLimit > 0 ? `$${policy.rules.dailyLimit}` : 'Unlimited'}</span>
+                    <span>{policy.rules?.dailyLimit > 0 ? `₹${policy.rules.dailyLimit}` : 'Unlimited'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Monthly Limit:</span>
-                    <span>{policy.rules?.monthlyLimit > 0 ? `$${policy.rules.monthlyLimit}` : 'Unlimited'}</span>
+                    <span>{policy.rules?.monthlyLimit > 0 ? `₹${policy.rules.monthlyLimit}` : 'Unlimited'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Pre-approval Needed:</span>
@@ -291,7 +291,7 @@ const Policies = () => {
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-400 mb-1">Max Meal Expense ($)</label>
+                    <label className="block text-slate-400 mb-1">Max Meal Expense (₹)</label>
                     <input 
                       type="number" 
                       value={form.rules.maxMealAmount}
@@ -303,7 +303,7 @@ const Policies = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Max Travel Expense ($)</label>
+                    <label className="block text-slate-400 mb-1">Max Travel Expense (₹)</label>
                     <input 
                       type="number" 
                       value={form.rules.maxTravelAmount}
@@ -315,7 +315,7 @@ const Policies = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Daily Cap ($)</label>
+                    <label className="block text-slate-400 mb-1">Daily Cap (₹)</label>
                     <input 
                       type="number" 
                       value={form.rules.dailyLimit}
@@ -327,7 +327,7 @@ const Policies = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1">Monthly Cap ($)</label>
+                    <label className="block text-slate-400 mb-1">Monthly Cap (₹)</label>
                     <input 
                       type="number" 
                       value={form.rules.monthlyLimit}

@@ -10,7 +10,8 @@ import {
   Trash2, 
   Loader2, 
   X,
-  CheckCircle2
+  CheckCircle2,
+  Edit3
 } from 'lucide-react';
 
 const Users = () => {
@@ -27,6 +28,8 @@ const Users = () => {
   // Modal controls
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [deptModalOpen, setDeptModalOpen] = useState(false);
+  const [editUserModalOpen, setEditUserModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
 
   // Invite Employee Form
   const [inviteForm, setInviteForm] = useState({
@@ -37,6 +40,15 @@ const Users = () => {
   });
   const [inviting, setInviting] = useState(false);
   const [inviteSuccess, setInviteSuccess] = useState('');
+
+  // Edit Employee Form
+  const [editUserForm, setEditUserForm] = useState({
+    name: '',
+    role: 'Employee',
+    departmentId: '',
+    status: 'Active'
+  });
+  const [updatingUser, setUpdatingUser] = useState(false);
 
   // Department Form
   const [deptForm, setDeptForm] = useState({
@@ -90,6 +102,33 @@ const Users = () => {
       alert(err.response?.data?.error || 'Invitation failed');
     } finally {
       setInviting(false);
+    }
+  };
+
+  const handleOpenEditUser = (emp) => {
+    setEditingUser(emp);
+    setEditUserForm({
+      name: emp.name || '',
+      role: emp.role || 'Employee',
+      departmentId: emp.departmentId?._id || emp.departmentId || '',
+      status: emp.status || 'Active'
+    });
+    setEditUserModalOpen(true);
+  };
+
+  const handleEditUserSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    setUpdatingUser(true);
+    try {
+      await api.put(`/users/${editingUser._id}`, editUserForm);
+      setEditUserModalOpen(false);
+      setEditingUser(null);
+      fetchEmployees();
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to update employee details');
+    } finally {
+      setUpdatingUser(false);
     }
   };
 
@@ -171,6 +210,7 @@ const Users = () => {
                   <th className="py-4 px-6">Role</th>
                   <th className="py-4 px-6">Department</th>
                   <th className="py-4 px-6">Status</th>
+                  <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5 text-xs font-medium text-slate-300">
@@ -194,6 +234,14 @@ const Users = () => {
                       }`}>
                         {emp.status}
                       </span>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <button
+                        onClick={() => handleOpenEditUser(emp)}
+                        className="px-3 py-1.5 rounded-lg border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/10 transition-all font-semibold flex items-center gap-1 ml-auto"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" /> Edit
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -364,6 +412,92 @@ const Users = () => {
                 className="btn-gradient w-full py-3 rounded-xl font-bold flex items-center justify-center mt-4"
               >
                 {creatingDept ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Create Department'}
+              </button>
+            </form>
+          </div>
+        </div>
+      {/* Edit Employee Modal */}
+      {editUserModalOpen && editingUser && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="glass-card rounded-3xl p-6 border border-white/10 bg-slate-900 w-full max-w-md space-y-4">
+            <div className="flex justify-between items-center border-b border-white/5 pb-3">
+              <h3 className="text-base font-bold text-white">Edit Employee Details</h3>
+              <button onClick={() => setEditUserModalOpen(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditUserSubmit} className="space-y-4 text-xs font-semibold">
+              <div>
+                <label className="block text-slate-400 mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={editUserForm.name}
+                  onChange={(e) => setEditUserForm({ ...editUserForm, name: e.target.value })}
+                  className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Email (Read Only)</label>
+                <input 
+                  type="email" 
+                  disabled
+                  value={editingUser.email}
+                  className="w-full rounded-xl bg-slate-950/50 border border-white/5 px-4 py-2.5 text-slate-400 focus:outline-none cursor-not-allowed"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-slate-400 mb-1">Role Permission</label>
+                  <select 
+                    value={editUserForm.role}
+                    onChange={(e) => setEditUserForm({ ...editUserForm, role: e.target.value })}
+                    className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white font-semibold focus:outline-none"
+                  >
+                    <option value="Employee">Employee</option>
+                    <option value="HR Manager">HR Manager</option>
+                    <option value="Auditor">Auditor</option>
+                    <option value="Company Admin">Company Admin</option>
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-slate-400 mb-1">Department</label>
+                  <select 
+                    value={editUserForm.departmentId}
+                    onChange={(e) => setEditUserForm({ ...editUserForm, departmentId: e.target.value })}
+                    className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white font-semibold focus:outline-none"
+                  >
+                    <option value="">Unassigned</option>
+                    {departments.map(d => (
+                      <option key={d._id} value={d._id}>{d.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-slate-400 mb-1">Account Status</label>
+                <select 
+                  value={editUserForm.status}
+                  onChange={(e) => setEditUserForm({ ...editUserForm, status: e.target.value })}
+                  className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white font-semibold focus:outline-none"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Suspended">Suspended</option>
+                </select>
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={updatingUser}
+                className="btn-gradient w-full py-3 rounded-xl font-bold flex items-center justify-center mt-4"
+              >
+                {updatingUser ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Save Employee Changes'}
               </button>
             </form>
           </div>

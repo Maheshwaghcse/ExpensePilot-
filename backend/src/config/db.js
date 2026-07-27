@@ -131,13 +131,13 @@ const connectDB = async () => {
   // Production Mode: Direct MongoDB Atlas Connection
   if (isProduction) {
     try {
-      const conn = await mongoose.connect(targetUri);
+      const conn = await mongoose.connect(targetUri, { serverSelectionTimeoutMS: 5000 });
       console.log(`[MongoDB Production] Connected to Cloud Database: ${conn.connection.host}`);
       await seedDefaultDataIfNeeded();
       return;
     } catch (prodErr) {
-      console.error(`[MongoDB Production Error] Failed to connect to database: ${prodErr.message}`);
-      throw prodErr;
+      console.warn(`[MongoDB Production Warning] Failed to connect to database (${prodErr.message}). Express server will start to maintain availability.`);
+      return;
     }
   }
 

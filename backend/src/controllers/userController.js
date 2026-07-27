@@ -147,10 +147,14 @@ const updateUser = async (req, res) => {
     if (role && req.user.role === 'Company Admin') user.role = role; // Only Company Admin can change roles
     if (status) user.status = status;
     
-    if (departmentId) {
-      const dept = await Department.findOne({ _id: departmentId, companyId: req.user.companyId });
-      if (!dept) return res.status(400).json({ error: 'Department does not exist' });
-      user.departmentId = departmentId;
+    if (departmentId !== undefined) {
+      if (!departmentId || departmentId === 'null' || departmentId === 'unassigned') {
+        user.departmentId = undefined;
+      } else {
+        const dept = await Department.findOne({ _id: departmentId, companyId: req.user.companyId });
+        if (!dept) return res.status(400).json({ error: 'Department does not exist' });
+        user.departmentId = departmentId;
+      }
     }
 
     await user.save();
