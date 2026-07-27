@@ -41,10 +41,13 @@ const sendEmail = async ({ to, subject, html }) => {
 
     const fromAddress = process.env.EMAIL_FROM || `"ExpensePilot" <${emailUser}>`;
 
+    const plainText = html ? html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() : 'Please verify your ExpensePilot account.';
+
     const info = await transporter.sendMail({
       from: fromAddress,
       to,
       subject,
+      text: plainText,
       html
     });
 

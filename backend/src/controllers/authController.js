@@ -71,6 +71,13 @@ const register = async (req, res) => {
       `
     });
 
+    console.log('\n======================================================');
+    console.log(`[VERIFICATION EMAIL DISPATCHED]`);
+    console.log(`TO:               ${user.email}`);
+    console.log(`VERIFICATION URL: ${verificationUrl}`);
+    console.log(`TOKEN:            ${verificationToken}`);
+    console.log('======================================================\n');
+
     // Audit Log
     await AuditLog.create({
       companyId: company._id,
@@ -82,7 +89,8 @@ const register = async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'Onboarding registration completed successfully. Please check your email to verify your account.'
+      message: 'Onboarding registration completed successfully. Please check your email inbox (or Spam/Junk folder) to verify your account.',
+      verificationToken: process.env.NODE_ENV !== 'production' ? verificationToken : undefined
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

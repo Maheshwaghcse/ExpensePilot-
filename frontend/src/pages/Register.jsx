@@ -23,8 +23,11 @@ const Register = () => {
     setLoading(true);
     setErrorMsg('');
     try {
-      await registerCompany(data.name, data.email, data.password, data.companyName);
-      setSuccessMsg('Registration successful! A verification email has been dispatched to your email inbox. Click the verification link in your email or paste the token string below.');
+      const res = await registerCompany(data.name, data.email, data.password, data.companyName);
+      setSuccessMsg('Registration successful! A verification email has been dispatched to your email inbox. (Check your Spam/Junk folder if you don\'t see it immediately).');
+      if (res?.verificationToken) {
+        setVerificationToken(res.verificationToken);
+      }
       setVerificationMode(true);
     } catch (err) {
       setErrorMsg(err);
