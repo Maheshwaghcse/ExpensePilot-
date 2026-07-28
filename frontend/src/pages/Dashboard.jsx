@@ -74,7 +74,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         <MetricCard 
           title="Total Audited Spend" 
-          value={`$${metrics.totalSpent.toLocaleString()}`} 
+          value={`₹${metrics.totalSpent.toLocaleString()}`} 
           icon={DollarSign} 
           trend="+12.4% MoM" 
           trendType="down" // positive business trend (lower spend rate or green highlight)
@@ -177,7 +177,7 @@ const Dashboard = () => {
               <div key={item.name} className="flex items-center gap-2 text-xs">
                 <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }}></span>
                 <span className="text-slate-400 truncate">{item.name}</span>
-                <span className="text-slate-300 font-bold ml-auto">${item.value}</span>
+                <span className="text-slate-300 font-bold ml-auto">₹{item.value}</span>
               </div>
             ))}
           </div>
@@ -229,7 +229,7 @@ const Dashboard = () => {
                     </span>
                     <span className="text-sm font-semibold text-white">{emp.name}</span>
                   </div>
-                  <span className="text-sm font-bold text-indigo-400">${emp.amount.toLocaleString()}</span>
+                  <span className="text-sm font-bold text-indigo-400">₹{emp.amount.toLocaleString()}</span>
                 </div>
               ))
             )}

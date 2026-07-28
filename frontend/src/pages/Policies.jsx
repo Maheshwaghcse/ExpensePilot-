@@ -181,24 +181,16 @@ const Policies = () => {
                 {/* Rules Details */}
                 <div className="border-t border-white/5 pt-4 space-y-2 text-xs font-semibold text-slate-300">
                   <div className="flex justify-between">
-                    <span className="text-slate-400 font-medium">Max Meal Cost:</span>
-                    <span>{policy.rules?.maxMealAmount > 0 ? `₹${policy.rules.maxMealAmount}` : 'Unlimited'}</span>
+                    <span className="text-slate-400 font-medium">Daily Expense Cap:</span>
+                    <span className="font-bold text-indigo-400">{policy.rules?.dailyLimit > 0 ? `₹${policy.rules.dailyLimit}` : 'No Daily Limit'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400 font-medium">Max Travel Cost:</span>
-                    <span>{policy.rules?.maxTravelAmount > 0 ? `₹${policy.rules.maxTravelAmount}` : 'Unlimited'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400 font-medium">Daily Limit:</span>
-                    <span>{policy.rules?.dailyLimit > 0 ? `₹${policy.rules.dailyLimit}` : 'Unlimited'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400 font-medium">Monthly Limit:</span>
-                    <span>{policy.rules?.monthlyLimit > 0 ? `₹${policy.rules.monthlyLimit}` : 'Unlimited'}</span>
+                    <span className="text-slate-400 font-medium">Monthly Expense Cap:</span>
+                    <span className="font-bold text-indigo-400">{policy.rules?.monthlyLimit > 0 ? `₹${policy.rules.monthlyLimit}` : 'No Monthly Limit'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-medium">Pre-approval Needed:</span>
-                    <span className={policy.rules?.requiresPreApproval ? 'text-indigo-400' : 'text-slate-500'}>
+                    <span className={policy.rules?.requiresPreApproval ? 'text-amber-400 font-bold' : 'text-slate-500'}>
                       {policy.rules?.requiresPreApproval ? 'Yes' : 'No'}
                     </span>
                   </div>
@@ -287,33 +279,9 @@ const Policies = () => {
               </div>
 
               <div className="border-t border-white/5 pt-4">
-                <h4 className="text-xs font-bold text-indigo-400 mb-3 uppercase tracking-wide">Threshold rules (0 means no limit)</h4>
+                <h4 className="text-xs font-bold text-indigo-400 mb-3 uppercase tracking-wide">Threshold rules (Entering 0 means no limit)</h4>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-slate-400 mb-1">Max Meal Expense (₹)</label>
-                    <input 
-                      type="number" 
-                      value={form.rules.maxMealAmount}
-                      onChange={(e) => setForm({ 
-                        ...form, 
-                        rules: { ...form.rules, maxMealAmount: e.target.value } 
-                      })}
-                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-slate-400 mb-1">Max Travel Expense (₹)</label>
-                    <input 
-                      type="number" 
-                      value={form.rules.maxTravelAmount}
-                      onChange={(e) => setForm({ 
-                        ...form, 
-                        rules: { ...form.rules, maxTravelAmount: e.target.value } 
-                      })}
-                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-slate-400 mb-1">Daily Cap (₹)</label>
                     <input 
@@ -323,7 +291,8 @@ const Policies = () => {
                         ...form, 
                         rules: { ...form.rules, dailyLimit: e.target.value } 
                       })}
-                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none"
+                      placeholder="e.g. 2000"
+                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                   <div>
@@ -335,7 +304,8 @@ const Policies = () => {
                         ...form, 
                         rules: { ...form.rules, monthlyLimit: e.target.value } 
                       })}
-                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none"
+                      placeholder="e.g. 50000"
+                      className="w-full rounded-xl bg-slate-950 border border-white/10 px-4 py-2.5 text-white focus:outline-none focus:border-indigo-500"
                     />
                   </div>
                 </div>

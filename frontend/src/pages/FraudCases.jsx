@@ -111,7 +111,7 @@ const FraudCases = () => {
 
                 <div className="space-y-1">
                   <h4 className="text-sm font-bold text-white truncate">{c.expenseId?.merchantName || 'Manual Submission'}</h4>
-                  <p className="text-xs font-extrabold text-indigo-400">${c.expenseId?.amount} USD</p>
+                  <p className="text-xs font-extrabold text-indigo-400">₹{c.expenseId?.amount}</p>
                   <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 mt-2">
                     <User className="w-3.5 h-3.5 text-indigo-400" />
                     Submitted by: {c.expenseId?.employeeId?.name || 'Unknown'}
@@ -147,7 +147,7 @@ const FraudCases = () => {
                 {selectedCase.riskLevel} Risk Profiler
               </span>
               <h3 className="text-sm font-bold text-white mt-3">{selectedCase.expenseId?.merchantName}</h3>
-              <p className="text-xs font-semibold text-slate-400">Claim Amount: <span className="text-white font-extrabold">${selectedCase.expenseId?.amount}</span></p>
+              <p className="text-xs font-semibold text-slate-400">Claim Amount: <span className="text-white font-extrabold">₹{selectedCase.expenseId?.amount}</span></p>
             </div>
 
             {/* Audit log details */}

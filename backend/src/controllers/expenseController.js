@@ -91,6 +91,10 @@ const getExpenseById = async (req, res) => {
 // Create a claim manually (without or with an optional receipt)
 const createManualExpense = async (req, res) => {
   try {
+    if (req.user.role === 'Auditor') {
+      return res.status(403).json({ error: 'Financial Auditors conduct system audits and cannot create personal expense claims.' });
+    }
+
     const { category, amount, currency, merchantName, expenseDate, notes, receiptId } = req.body;
 
     const user = await User.findById(req.user.id);
@@ -101,13 +105,13 @@ const createManualExpense = async (req, res) => {
       departmentId: user.departmentId || undefined,
       category,
       amount: parseFloat(amount),
-      currency: currency || 'USD',
+      currency: currency || 'INR',
       merchantName,
       expenseDate: expenseDate || new Date(),
       notes,
       receiptId: receiptId || undefined,
       status: 'Submitted',
-      approvalStage: 'Manager'
+      approvalStage: user.role === 'HR Manager' ? 'HR' : 'Manager'
     });
 
     // Run Fraud Engine immediately since we have data
@@ -122,7 +126,7 @@ const createManualExpense = async (req, res) => {
       userId: req.user.id,
       companyId: req.user.companyId,
       title: 'Expense Claim Submitted',
-      message: `Your manual claim of $${expense.amount} at ${expense.merchantName} was submitted. Risk Score: ${expense.riskScore}%.`,
+      message: `Your manual claim of ₹${expense.amount} at ${expense.merchantName} was submitted. Risk Score: ${expense.riskScore}%.`,
       type: expense.riskScore >= 40 ? 'Warning' : 'Info'
     });
 
@@ -229,7 +233,10 @@ const approveExpense = async (req, res) => {
     // Authorization Check for each workflow stage
     let isAuthorized = false;
 
-    if (currentStage === 'Manager') {
+    // Company Admin has master permission to approve at any stage
+    if (req.user.role === 'Company Admin') {
+      isAuthorized = true;
+    } else if (currentStage === 'Manager') {
       // Find department manager
       if (expense.departmentId) {
         const dept = await Department.findById(expense.departmentId);
@@ -237,16 +244,16 @@ const approveExpense = async (req, res) => {
           isAuthorized = true;
         }
       }
-      // Company Admin and HR Manager can bypass manager approvals
       if (['Company Admin', 'HR Manager'].includes(req.user.role)) {
         isAuthorized = true;
       }
     } else if (currentStage === 'HR') {
-      if (['Company Admin', 'HR Manager'].includes(req.user.role)) {
+      const isClaimOwner = expense.employeeId?._id?.toString() === req.user.id || expense.employeeId?.toString() === req.user.id;
+      if (req.user.role === 'HR Manager' && !isClaimOwner) {
         isAuthorized = true;
       }
     } else if (currentStage === 'Finance') {
-      if (['Company Admin', 'Auditor'].includes(req.user.role)) {
+      if (req.user.role === 'Auditor') {
         isAuthorized = true;
       }
     }

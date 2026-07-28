@@ -32,9 +32,9 @@ const detectFraud = async (expense, receiptData = null) => {
   // 2. Cross check user inputs with OCR extracted values
   if (receiptData) {
     const amountDiff = Math.abs(expense.amount - receiptData.amount);
-    if (amountDiff > 1.0) { // Difference larger than 1 dollar/currency unit
+    if (amountDiff > 1.0) {
       riskScore += 30;
-      fraudFlags.push(`Amount mismatch: manually input amount ($${expense.amount}) differs from OCR extracted amount ($${receiptData.amount}).`);
+      fraudFlags.push(`Amount mismatch: manually input amount (₹${expense.amount}) differs from OCR extracted amount (₹${receiptData.amount}).`);
     }
 
     if (receiptData.merchantName && expense.merchantName) {
@@ -50,20 +50,9 @@ const detectFraud = async (expense, receiptData = null) => {
   // 3. Match against Policy limits
   const activePolicies = await Policy.find({ companyId, isActive: true });
   for (const policy of activePolicies) {
-    // Check Category Limit (Food/Meal limit)
-    if (expense.category === 'Food' && policy.rules?.maxMealAmount > 0) {
-      if (expense.amount > policy.rules.maxMealAmount) {
-        riskScore += 25;
-        fraudFlags.push(`Policy violation: Meal expense exceeds the maximum Meal limit of $${policy.rules.maxMealAmount}.`);
-      }
-    }
-
-    // Check Travel Limit
-    if (expense.category === 'Travel' && policy.rules?.maxTravelAmount > 0) {
-      if (expense.amount > policy.rules.maxTravelAmount) {
-        riskScore += 25;
-        fraudFlags.push(`Policy violation: Travel expense exceeds the maximum Travel limit of $${policy.rules.maxTravelAmount}.`);
-      }
+    if (policy.rules?.dailyLimit > 0 && expense.amount > policy.rules.dailyLimit) {
+      riskScore += 25;
+      fraudFlags.push(`Policy violation: Claim amount (₹${expense.amount}) exceeds the Daily Cap limit of ₹${policy.rules.dailyLimit}.`);
     }
 
     // Check allowed vendors
@@ -78,20 +67,19 @@ const detectFraud = async (expense, receiptData = null) => {
     }
   }
 
-  // 4. Repeated submission patterns under limits (e.g. thresholds of $50)
-  // Let's count expenses submitted by the same user with amounts between 48.00 and 49.99
+  // 4. Repeated submission patterns under limits
   const thresholdMin = 48.00;
   const thresholdMax = 49.99;
   if (expense.amount >= thresholdMin && expense.amount <= thresholdMax) {
     const recentNearThreshold = await Expense.countDocuments({
       employeeId: expense.employeeId,
       amount: { $gte: thresholdMin, $lte: thresholdMax },
-      createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } // past 30 days
+      createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }
     });
 
     if (recentNearThreshold >= 3) {
       riskScore += 20;
-      fraudFlags.push(`Suspicious submission cluster: submitted ${recentNearThreshold} claims in the past 30 days between $${thresholdMin} and $${thresholdMax} (potential threshold avoidance).`);
+      fraudFlags.push(`Suspicious submission cluster: submitted ${recentNearThreshold} claims in the past 30 days between ₹${thresholdMin} and ₹${thresholdMax} (potential threshold avoidance).`);
     }
   }
 

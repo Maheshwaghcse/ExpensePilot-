@@ -174,16 +174,19 @@ const Expenses = () => {
   const canApprove = () => {
     if (!selectedExpense || selectedExpense.status === 'Approved' || selectedExpense.status === 'Rejected') return false;
     
+    // Company Admin has master permission to approve claims at any stage
+    if (user?.role === 'Company Admin') return true;
+
     const stage = selectedExpense.approvalStage;
     
     if (stage === 'Manager') {
-      return ['Company Admin', 'HR Manager'].includes(user.role);
+      return ['Company Admin', 'HR Manager'].includes(user?.role);
     }
     if (stage === 'HR') {
-      return ['Company Admin', 'HR Manager'].includes(user.role);
+      return ['Company Admin', 'HR Manager'].includes(user?.role);
     }
     if (stage === 'Finance') {
-      return ['Company Admin', 'Auditor'].includes(user.role);
+      return ['Company Admin', 'Auditor'].includes(user?.role);
     }
     return false;
   };
@@ -205,6 +208,76 @@ const Expenses = () => {
     return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
   };
 
+  const renderApprovalStepper = (exp) => {
+    if (!exp) return null;
+    if (exp.status === 'Rejected') {
+      return (
+        <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold flex items-center gap-2">
+          <X className="w-4 h-4 shrink-0" /> Claim Rejected during audit review
+        </div>
+      );
+    }
+
+    const stages = [
+      { label: 'Submitted', key: 'Submitted' },
+      { label: 'Manager', key: 'Manager' },
+      { label: 'HR Review', key: 'HR' },
+      { label: 'Finance/Audit', key: 'Finance' }
+    ];
+
+    const getStepStatus = (stepIndex) => {
+      if (exp.status === 'Approved' || exp.approvalStage === 'Completed') return 'completed';
+      const orderMap = { 'Manager': 1, 'HR': 2, 'Finance': 3, 'Completed': 4 };
+      const currentOrder = orderMap[exp.approvalStage] || 1;
+
+      if (stepIndex < currentOrder) return 'completed';
+      if (stepIndex === currentOrder) return 'current';
+      return 'upcoming';
+    };
+
+    const completedCount = stages.filter((_, idx) => getStepStatus(idx + 1) === 'completed').length;
+    const remainingCount = 4 - completedCount;
+
+    return (
+      <div className="p-4 rounded-2xl bg-slate-950/70 border border-white/5 space-y-3">
+        <div className="flex justify-between items-center text-[11px] font-bold">
+          <span className="text-slate-400 uppercase tracking-wide">Approval Stage Tracker</span>
+          <span className={exp.status === 'Approved' ? 'text-emerald-400' : 'text-indigo-400'}>
+            {exp.status === 'Approved' ? '✅ All 4 Stages Approved!' : `${completedCount} Done • ${remainingCount} Stage(s) Left`}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-4 gap-1 sm:gap-2 items-center pt-1">
+          {stages.map((stg, idx) => {
+            const stepNum = idx + 1;
+            const status = getStepStatus(stepNum);
+            const isDone = status === 'completed';
+            const isCurrent = status === 'current';
+
+            return (
+              <div key={stg.key} className="flex flex-col items-center gap-1.5 text-center">
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold transition-all border ${
+                  isDone 
+                    ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md shadow-emerald-500/20' 
+                    : isCurrent 
+                      ? 'bg-indigo-600 text-white border-indigo-400 ring-2 ring-indigo-500/30 animate-pulse' 
+                      : 'bg-slate-900 text-slate-500 border-white/10'
+                }`}>
+                  {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : stepNum}
+                </div>
+                <span className={`text-[10px] font-bold truncate max-w-full ${
+                  isDone ? 'text-emerald-400' : isCurrent ? 'text-indigo-400' : 'text-slate-500'
+                }`}>
+                  {stg.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
       {/* List Panel */}
@@ -212,18 +285,27 @@ const Expenses = () => {
         <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
           {/* Action buttons */}
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button 
-              onClick={() => setUploadModalOpen(true)}
-              className="btn-gradient px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-2 active:scale-95"
-            >
-              <Upload className="w-4 h-4" /> Upload Receipt
-            </button>
-            <button 
-              onClick={() => setManualModalOpen(true)}
-              className="px-4 py-2.5 rounded-xl border border-indigo-500/20 text-indigo-400 bg-indigo-500/5 hover:bg-indigo-500/10 text-xs font-bold flex items-center gap-2 transition-all active:scale-95"
-            >
-              <Plus className="w-4 h-4" /> Manual Claim
-            </button>
+            {user?.role === 'Auditor' ? (
+              <div className="px-4 py-2.5 rounded-xl border border-indigo-500/20 bg-indigo-500/10 text-indigo-400 text-xs font-bold flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
+                <span>Auditors conduct system audits and do not submit personal claims.</span>
+              </div>
+            ) : (
+              <>
+                <button 
+                  onClick={() => setUploadModalOpen(true)}
+                  className="btn-gradient px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide flex items-center gap-2 active:scale-95"
+                >
+                  <Upload className="w-4 h-4" /> Upload Receipt
+                </button>
+                <button 
+                  onClick={() => setManualModalOpen(true)}
+                  className="px-4 py-2.5 rounded-xl border border-indigo-500/20 text-indigo-400 bg-indigo-500/5 hover:bg-indigo-500/10 text-xs font-bold flex items-center gap-2 transition-all active:scale-95"
+                >
+                  <Plus className="w-4 h-4" /> Manual Claim
+                </button>
+              </>
+            )}
           </div>
 
           {/* Search bar */}
@@ -321,7 +403,7 @@ const Expenses = () => {
                           {expense.riskScore}%
                         </span>
                       </td>
-                      <td className="py-4 px-6 font-bold text-white">${expense.amount.toLocaleString()}</td>
+                      <td className="py-4 px-6 font-bold text-white">₹{expense.amount.toLocaleString()}</td>
                       <td className="py-4 px-6">
                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${getStatusStyle(expense.status)}`}>
                           {expense.status.replace('_', ' ')}
@@ -353,6 +435,9 @@ const Expenses = () => {
               </span>
             </div>
 
+            {/* Approval Progress Stepper */}
+            {renderApprovalStepper(selectedExpense)}
+
             {/* Risk Box */}
             <div className={`p-4 rounded-2xl border ${getRiskStyle(selectedExpense.riskScore)}`}>
               <div className="flex items-center justify-between mb-2">
@@ -377,7 +462,7 @@ const Expenses = () => {
             <div className="space-y-3.5 text-xs border-b border-white/5 pb-5">
               <div className="flex justify-between">
                 <span className="text-slate-400 font-medium">Claim Amount</span>
-                <span className="font-extrabold text-white text-sm">${selectedExpense.amount} {selectedExpense.currency}</span>
+                <span className="font-extrabold text-white text-sm">₹{selectedExpense.amount}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-400 font-medium">Employee Name</span>
@@ -519,7 +604,7 @@ const Expenses = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-400 mb-1">Amount (USD)</label>
+                  <label className="block text-slate-400 mb-1">Amount (₹)</label>
                   <input 
                     type="number" 
                     step="0.01"
